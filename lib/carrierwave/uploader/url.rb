@@ -16,18 +16,22 @@ module CarrierWave
       #
       def url(options = {})
         if file.respond_to?(:url) and not (tmp_url = file.url).blank?
-          file.method(:url).arity == 0 ? Aws::CF::Signer.sign_url(tmp_url) : Aws::CF::Signer.sign_url(file.url(options))
+          if Aws::CF::Signer.is_configured?
+            file.method(:url).arity == 0 ? Aws::CF::Signer.sign_url(tmp_url) : Aws::CF::Signer.sign_url(file.url(options))
+          else
+            file.method(:url).arity == 0 ? tmp_url : file.url(options)
+          end
         elsif file.respond_to?(:path)
           path = encode_path(file.path.sub(File.expand_path(root), ''))
 
           if host = asset_host
             if host.respond_to? :call
-              Aws::CF::Signer.sign_url("#{host.call(file)}#{path}")
+              Aws::CF::Signer.is_configured? ? Aws::CF::Signer.sign_url("#{host.call(file)}#{path}") : "#{host.call(file)}#{path}"
             else
-              Aws::CF::Signer.sign_url("#{host}#{path}")
+              Aws::CF::Signer.is_configured? ? Aws::CF::Signer.sign_url("#{host}#{path}") : "#{host}#{path}"
             end
           else
-            Aws::CF::Signer.sign_url((base_path || "") + path)
+            Aws::CF::Signer.is_configured? ? Aws::CF::Signer.sign_url((base_path || "") + path) : (base_path || "") + path
           end
         end
       end
