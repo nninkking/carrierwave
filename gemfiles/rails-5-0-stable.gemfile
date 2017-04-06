@@ -2,5 +2,6 @@ source "https://rubygems.org"
 
 gem "rails", :github => "rails/rails", :branch => "5-0-stable"
 gem "activemodel-serializers-xml"
+gem "cloudfront-signer", :github => "leonelgalan/cloudfront-signer"
 
 gemspec :path => "../"

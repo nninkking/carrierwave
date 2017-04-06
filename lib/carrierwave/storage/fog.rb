@@ -378,11 +378,11 @@ module CarrierWave
         # [NilClass] no url available
         #
         def url(options = {})
-          if !@uploader.fog_public
-            authenticated_url(options)
-          else
+          # if !@uploader.fog_public
+          #   authenticated_url(options)
+          # else
             public_url
-          end
+          # end
         end
 
         ##
